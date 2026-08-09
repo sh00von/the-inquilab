@@ -1,0 +1,12 @@
+{
+  "name": "the-inquilab",
+  "compatibility_date": "2025-01-01",
+  "main": "worker.ts",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "inquilab",
+      "database_id": "17487cff-2b5d-4bc5-8664-70a2c66fce8a"
+    }
+  ]
+}

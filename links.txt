@@ -1,0 +1,73 @@
+# ==============================================================================
+# Bangladesh July-August 2024 Mass Uprising - Authentic News Article URLs
+# ==============================================================================
+
+# --- Category 1: Early Movement & Bangla Blockade (July 1–14, 2024) ---
+https://www.prothomalo.com/bangladesh/politics/v1l8w62e2w
+https://www.thedailystar.net/news/bangladesh/news/quota-protests-students-block-key-intersections-dhaka-3651101
+https://www.tbsnews.net/bangladesh/quota-reform-movement-clashes-erupt-dhaka-university-897581
+
+# --- Category 2: BCL Attack, First Fatalities & Abu Sayed Martyrdom (July 15–17, 2024) ---
+https://www.prothomalo.com/bangladesh/1gwvyiambx
+https://www.prothomalo.com/bangladesh/capital/ojbn0t8n32
+https://www.prothomalo.com/bangladesh/district/30hspcsq21
+https://www.prothomalo.com/bangladesh/district/y01l1hxa3f
+https://www.prothomalo.com/bangladesh/district/958xluqswo
+https://en.prothomalo.com/bangladesh/7k3j9v415q
+https://www.thedailystar.net/news/bangladesh/news/student-rangpur-killed-during-clash-between-police-and-protesters-3658216
+https://www.aljazeera.com/news/2024/7/16/bangladesh-students-killed-in-clashes-over-government-jobs-quotas
+https://thedailycampus.com/student-movement-politics/147558/
+https://thedailycampus.com/student-movement-politics/147846/
+
+# --- Category 3: Complete Shutdown, Fatalities & Internet Blackout (July 18–23, 2024) ---
+https://www.thedailystar.net/news/bangladesh/news/shut-down-internet-restored-partially-3661101
+https://www.thedailystar.net/news/bangladesh/news/curfew-imposed-across-bangladesh-army-deployed-3659901
+https://www.thedailystar.net/news/bangladesh/news/sc-scraps-hc-verdict-quota-93-percent-merit-3660101
+https://www.aljazeera.com/news/2024/7/18/bangladesh-protests-death-toll-rises-as-internet-shut-down
+https://www.aljazeera.com/news/2024/7/21/bangladesh-top-court-scales-back-controversial-civil-service-quotas
+https://www.bbc.com/news/articles/c047dn7z322o
+https://www.bbc.com/news/articles/c51121d5171o
+https://thedailycampus.com/national/148102/
+https://thedailycampus.com/national/148501/
+https://www.prothomalo.com/bangladesh/crime-and-law/600l1m92g4
+
+# --- Category 4: DB Office Detentions, Coordinators & Mass Arrests (July 24–31, 2024) ---
+https://www.thedailystar.net/news/bangladesh/news/six-coordinators-released-db-custody-3667101
+https://en.prothomalo.com/bangladesh/9m3f2y648d
+https://www.newagebd.net/article/239801/bangladesh-student-protests-killings-death-toll
+https://www.newagebd.net/article/240102/internet-blackout-nationwide-curfew
+
+# --- Category 5: Shaheed Minar Declaration & One-Point Demand (August 1–4, 2024) ---
+https://www.thedailystar.net/news/bangladesh/news/thousands-protesters-demonstrate-shahbagh-one-point-demand-3669301
+https://www.dhakatribune.com/bangladesh/353901/students-announce-one-point-demand-for-hasinas-resignation
+https://www.tbsnews.net/bangladesh/quota-protests-shaheed-minar-one-point-demand-908121
+
+# --- Category 6: Regime Fall, Hasina Flees & People's Victory (August 5–6, 2024) ---
+https://www.thedailystar.net/news/bangladesh/news/hasina-falls-flees-3670201
+https://www.bbc.com/news/articles/clywww69p2vo
+https://www.aljazeera.com/news/2024/8/5/bangladesh-pm-sheikh-hasina-resigns-after-deadly-protests
+https://www.tbsnews.net/bangladesh/sheikh-hasina-resigns-pm-flees-country-909981
+https://thedailycampus.com/student-movement-politics/149654/
+
+# --- Category 7: Interim Government & Dr. Muhammad Yunus Oath (August 7–10, 2024) ---
+https://www.thedailystar.net/news/bangladesh/news/dr-yunus-takes-oath-chief-adviser-interim-gov-3672001
+https://www.bbc.com/news/articles/c989yy85v1ro
+https://www.aljazeera.com/news/2024/8/8/muhammad-yunus-takes-oath-as-head-of-bangladesh-interim-government
+https://www.tbsnews.net/bangladesh/interim-government-sworn-dr-yunus-chief-adviser-912101
+
+# --- Category 8: Awami League Leaders Arrested & Remanded ---
+https://www.thedailystar.net/news/bangladesh/crime-justice/news/salman-f-rahman-anisul-huq-arrested-3676201
+https://www.thedailystar.net/news/bangladesh/crime-justice/news/dipu-moni-palak-inu-menon-remanded-3681101
+https://www.dhakatribune.com/bangladesh/crime/354721/salman-f-rahman-anisul-huq-arrested
+https://www.dhakatribune.com/bangladesh/355101/former-minister-dipu-moni-arrested-in-dhaka
+https://www.tbsnews.net/bangladesh/crime/salman-f-rahman-anisul-huq-arrested-dhaka-916501
+
+# --- Category 9: Aynaghar Secret Detention Centers & Disclosures ---
+https://www.thedailystar.net/news/bangladesh/news/aynaghar-victims-released-former-army-officer-azmi-barrister-arman-back-home-3671101
+https://www.thedailystar.net/news/bangladesh/news/commission-finds-8-secret-detention-centers-3725001
+https://www.aljazeera.com/news/2024/8/7/bangladesh-secret-detention-center-aynaghar-victims-freed
+
+# --- Category 10: International Crimes Tribunal (ICT) Trials & Arrest Warrants ---
+https://www.thedailystar.net/news/bangladesh/crime-justice/news/ict-issues-arrest-warrant-against-hasina-45-others-3729101
+https://www.thedailystar.net/news/bangladesh/crime-justice/news/ict-reconstituted-begins-july-uprising-trial-3728001
+https://www.dhakatribune.com/bangladesh/362001/ict-issues-arrest-warrant-for-sheikh-hasina
