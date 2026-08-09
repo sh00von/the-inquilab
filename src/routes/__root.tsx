@@ -6,14 +6,14 @@ import {
 	Scripts,
 	useRouterState,
 } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
 	head: () => ({
 		meta: [
 			{ charSet: "utf-8" },
-			{ name: "viewport", content: "width=device-width, initial-scale=1" },
+			{ name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
 			{ title: "The Inquilab — Bangladesh July Revolution Archive" },
 			{
 				name: "description",
@@ -21,6 +21,13 @@ export const Route = createRootRoute({
 					"A living archive of the Bangladesh July–August 2024 Mass Uprising. Documenting martyrs, news, and testimonies of the student-people revolution.",
 			},
 			{ name: "theme-color", content: "#0f172a" },
+			{ property: "og:title", content: "The Inquilab — Bangladesh July Revolution Archive" },
+			{
+				property: "og:description",
+				content:
+					"A verified digital archive of the 2024 Bangladesh mass uprising. Martyrs, testimonies, and news records.",
+			},
+			{ property: "og:type", content: "website" },
 		],
 		links: [
 			{ rel: "stylesheet", href: appCss },
@@ -58,10 +65,11 @@ function NotFound() {
 			<h1
 				style={{
 					fontFamily: "Outfit, sans-serif",
-					fontSize: "3.5rem",
+					fontSize: "clamp(3rem, 12vw, 6rem)",
 					fontWeight: 900,
 					color: "#dc2626",
 					margin: "0 0 12px 0",
+					lineHeight: 1,
 				}}
 			>
 				404
@@ -69,7 +77,7 @@ function NotFound() {
 			<h2
 				style={{
 					fontFamily: "Outfit, sans-serif",
-					fontSize: "1.5rem",
+					fontSize: "clamp(1.1rem, 3vw, 1.5rem)",
 					fontWeight: 700,
 					color: "#1f1f23",
 					margin: "0 0 12px 0",
@@ -77,9 +85,8 @@ function NotFound() {
 			>
 				Record Not Found
 			</h2>
-			<p style={{ color: "#475569", maxWidth: 460, margin: "0 0 24px 0" }}>
-				The archive record or route you requested could not be located in our
-				system.
+			<p style={{ color: "#475569", maxWidth: 460, margin: "0 0 24px 0", fontSize: "0.95rem" }}>
+				The archive record or route you requested could not be located in our system.
 			</p>
 			<Link
 				to="/"
@@ -108,7 +115,7 @@ function RouteError({ error }: { error: Error }) {
 			<h1
 				style={{
 					fontFamily: "Outfit, sans-serif",
-					fontSize: "2rem",
+					fontSize: "clamp(1.5rem, 4vw, 2rem)",
 					fontWeight: 800,
 					color: "#dc2626",
 					margin: "0 0 12px 0",
@@ -184,7 +191,7 @@ function ProgressBar() {
 	);
 }
 
-/* ── Navbar ────────────────────────────────────────────────── */
+/* ── Scroll detection ──────────────────────────────────────── */
 
 function useScrolled(threshold = 10) {
 	const [scrolled, setScrolled] = useState(false);
@@ -205,6 +212,8 @@ function useScrolled(threshold = 10) {
 
 type Filter = "all" | "killed" | "alive";
 
+/* ── Navbar ────────────────────────────────────────────────── */
+
 function SiteNav() {
 	const scrolled = useScrolled();
 	const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -213,46 +222,135 @@ function SiteNav() {
 	});
 	const isArticle = pathname.startsWith("/news/");
 
-	return (
-		<nav className={`navbar${scrolled ? " scrolled" : ""}`}>
-			<Link
-				to="/"
-				search={{ filter: "all" as Filter, page: 1 }}
-				className="navbar-logo"
-			>
-				THE <span>INQUILAB</span>
-				<span className="navbar-badge">2024 ARCHIVE</span>
-			</Link>
+	const [menuOpen, setMenuOpen] = useState(false);
+	const menuRef = useRef<HTMLDivElement>(null);
 
-			{isArticle ? (
+	// Close menu on route change
+	// biome-ignore lint/correctness/useExhaustiveDependencies: intentional route-change reset
+	useEffect(() => {
+		setMenuOpen(false);
+	}, [pathname, searchFilter]);
+
+	// Close menu on ESC
+	useEffect(() => {
+		const handleKey = (e: KeyboardEvent) => {
+			if (e.key === "Escape") setMenuOpen(false);
+		};
+		window.addEventListener("keydown", handleKey);
+		return () => window.removeEventListener("keydown", handleKey);
+	}, []);
+
+	// Lock body scroll when mobile menu is open
+	useEffect(() => {
+		if (menuOpen) {
+			document.body.style.overflow = "hidden";
+		} else {
+			document.body.style.overflow = "";
+		}
+		return () => {
+			document.body.style.overflow = "";
+		};
+	}, [menuOpen]);
+
+	const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+	return (
+		<>
+			<nav className={`navbar${scrolled ? " scrolled" : ""}`}>
 				<Link
 					to="/"
 					search={{ filter: "all" as Filter, page: 1 }}
-					className="nav-back"
+					className="navbar-logo"
+					onClick={closeMenu}
 				>
-					← Return to Main Archive
+					THE <span>INQUILAB</span>
+					<span className="navbar-badge">2024 ARCHIVE</span>
 				</Link>
-			) : (
-				<div className="nav-links">
+
+				{isArticle ? (
 					<Link
 						to="/"
 						search={{ filter: "all" as Filter, page: 1 }}
-						resetScroll={false}
-						className={`nav-link${searchFilter === "all" ? " active" : ""}`}
+						className="nav-back"
 					>
-						All Records
+						← <span className="nav-back-label">Return to Main Archive</span>
 					</Link>
-					<Link
-						to="/"
-						search={{ filter: "killed" as Filter, page: 1 }}
-						resetScroll={false}
-						className={`nav-link${searchFilter === "killed" ? " active" : ""}`}
-					>
-						Martyrs
-					</Link>
-				</div>
-			)}
-		</nav>
+				) : (
+					<>
+						{/* Desktop nav links */}
+						<div className="nav-links">
+							<Link
+								to="/"
+								search={{ filter: "all" as Filter, page: 1 }}
+								resetScroll={false}
+								className={`nav-link${searchFilter === "all" ? " active" : ""}`}
+							>
+								All Records
+							</Link>
+							<Link
+								to="/"
+								search={{ filter: "killed" as Filter, page: 1 }}
+								resetScroll={false}
+								className={`nav-link${searchFilter === "killed" ? " active" : ""}`}
+							>
+								Martyrs
+							</Link>
+						</div>
+
+						{/* Mobile hamburger */}
+						<button
+							type="button"
+							className={`navbar-hamburger${menuOpen ? " open" : ""}`}
+							aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+							aria-expanded={menuOpen}
+							onClick={() => setMenuOpen((v) => !v)}
+						>
+							<span />
+							<span />
+							<span />
+						</button>
+					</>
+				)}
+			</nav>
+
+			{/* Mobile overlay backdrop */}
+			{/* biome-ignore lint/a11y/useSemanticElements: overlay backdrop */}
+			<div
+				className={`nav-mobile-overlay${menuOpen ? " open" : ""}`}
+				role="button"
+				tabIndex={-1}
+				aria-hidden="true"
+				onClick={closeMenu}
+				onKeyDown={(e) => e.key === "Escape" && closeMenu()}
+			/>
+
+			{/* Mobile slide-down menu */}
+			<div
+				ref={menuRef}
+				className={`nav-mobile-menu${menuOpen ? " open" : ""}`}
+				role="navigation"
+				aria-label="Mobile navigation"
+			>
+				<Link
+					to="/"
+					search={{ filter: "all" as Filter, page: 1 }}
+					className={`nav-mobile-link${searchFilter === "all" ? " active" : ""}`}
+					onClick={closeMenu}
+				>
+					<span className="nav-mobile-link-dot" />
+					All Records
+				</Link>
+				<Link
+					to="/"
+					search={{ filter: "killed" as Filter, page: 1 }}
+					className={`nav-mobile-link${searchFilter === "killed" ? " active" : ""}`}
+					onClick={closeMenu}
+				>
+					<span className="nav-mobile-link-dot" />
+					Martyr Records
+				</Link>
+			</div>
+		</>
 	);
 }
 
@@ -273,36 +371,12 @@ function SiteFooter() {
 					</p>
 				</div>
 				<div>
-					<div
-						style={{
-							fontSize: "0.88rem",
-							fontWeight: 700,
-							color: "#ffffff",
-							marginBottom: 12,
-						}}
-					>
-						Archive Sections
-					</div>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							gap: 8,
-							fontSize: "0.85rem",
-						}}
-					>
-						<Link
-							to="/"
-							search={{ filter: "all", page: 1 }}
-							style={{ color: "inherit", textDecoration: "none" }}
-						>
+					<div className="footer-nav-heading">Archive Sections</div>
+					<div className="footer-nav-links">
+						<Link to="/" search={{ filter: "all", page: 1 }}>
 							All Records
 						</Link>
-						<Link
-							to="/"
-							search={{ filter: "killed", page: 1 }}
-							style={{ color: "inherit", textDecoration: "none" }}
-						>
+						<Link to="/" search={{ filter: "killed", page: 1 }}>
 							Martyr Records
 						</Link>
 					</div>
