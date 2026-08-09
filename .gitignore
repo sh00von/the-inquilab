@@ -15,6 +15,7 @@ dist-ssr/
 .vinxi/
 build/
 out/
+.vercel/output/
 
 # ===========================
 # TanStack / Vite
