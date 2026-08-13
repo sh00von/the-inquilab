@@ -7,17 +7,19 @@ import urllib.request
 from pathlib import Path
 
 """
-Parallel Screenshot Scraping Script in Python (using Playwright Async)
-- Parses URLs from database/migrations or API
-- Opens pages with Playwright in parallel
-- Waits 2 seconds after load
-- Saves screenshots to public/screenshots/record-<id>.jpg
-- Creates SQL migration file for DB featured images
+High-Performance Parallel Python Screenshot Scraper
+- Concurrency: 15 parallel workers (range 10-20)
+- Delay: 10 seconds render wait per page
+- User-Agent: Modern Chrome Desktop
+- Overwrite support via FORCE=true or --force
 """
 
 SCREENSHOT_DIR = Path.cwd() / "public" / "screenshots"
-CONCURRENCY = int(os.getenv("CONCURRENCY", "5"))
-DELAY_SECONDS = 2.0  # 2-second wait per prompt requirement
+CONCURRENCY = int(os.getenv("CONCURRENCY", "15"))
+DELAY_SECONDS = float(os.getenv("DELAY", "10.0"))  # 10 seconds wait time
+FORCE_RECAPTURE = "--force" in sys.argv or os.getenv("FORCE", "false").lower() == "true"
+
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 
 SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -45,7 +47,7 @@ def fetch_all_news():
     # 2. Fallback to API
     api_url = os.getenv("API_ENDPOINT", "https://the-inquilab.minar-svn.workers.dev/api/news?limit=1000&page=1")
     try:
-        req = urllib.request.Request(api_url, headers={"User-Agent": "Mozilla/5.0"})
+        req = urllib.request.Request(api_url, headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             return data.get("data", [])
@@ -56,7 +58,15 @@ def fetch_all_news():
 async def worker(queue, browser, sql_statements, total_count, progress_counter):
     context = await browser.new_context(
         viewport={"width": 1280, "height": 720},
-        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+        user_agent=USER_AGENT,
+        extra_http_headers={
+            "Accept-Language": "en-US,en;q=0.9,bn;q=0.8",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "Sec-Ch-Ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+            "Sec-Ch-Ua-Mobile": "?0",
+            "Sec-Ch-Ua-Platform": '"Windows"',
+        },
+        device_scale_factor=1,
     )
     page = await context.new_page()
 
@@ -76,25 +86,25 @@ async def worker(queue, browser, sql_statements, total_count, progress_counter):
         filepath = SCREENSHOT_DIR / filename
         public_path = f"/screenshots/{filename}"
 
-        if filepath.exists():
+        if not FORCE_RECAPTURE and filepath.exists():
             print(f"[{idx}/{total_count}] ⏩ ID {item_id} already exists.")
             sql_statements.append(f"UPDATE news SET image = '{public_path}' WHERE id = {item_id};")
             queue.task_done()
             continue
 
-        print(f"[{idx}/{total_count}] 📸 Capturing ID {item_id}: {target_url}")
+        print(f"[{idx}/{total_count}] 📸 Capturing ID {item_id} (10s delay): {target_url}")
         try:
             try:
-                await page.goto(target_url, wait_until="domcontentloaded", timeout=20000)
+                await page.goto(target_url, wait_until="domcontentloaded", timeout=25000)
             except Exception:
                 pass
 
-            # Wait 2 seconds for render as requested
+            # Wait 10 seconds for dynamic fonts/images to render
             await asyncio.sleep(DELAY_SECONDS)
 
-            await page.screenshot(path=str(filepath), type="jpeg", quality=85)
+            await page.screenshot(path=str(filepath), type="jpeg", quality=88)
             sql_statements.append(f"UPDATE news SET image = '{public_path}' WHERE id = {item_id};")
-            print(f"[{idx}/{total_count}] ✅ Saved: {filename}")
+            print(f"[{idx}/{total_count}] ✅ Saved high-quality screenshot: {filename}")
         except Exception as err:
             print(f"[{idx}/{total_count}] ❌ Failed ID {item_id}: {err}")
         finally:
@@ -110,7 +120,9 @@ async def main():
         print("   pip install playwright && playwright install chromium")
         sys.exit(1)
 
-    print("🚀 Starting Parallel Python Screenshot Scraper...")
+    print("🚀 Starting Parallel Python Screenshot Scraper (High Quality 10s Render)...")
+    print(f"⚙️ Concurrency: {CONCURRENCY} workers | Render Delay: {DELAY_SECONDS}s | User-Agent: {USER_AGENT}")
+    
     items = fetch_all_news()
     total_count = len(items)
     print(f"📋 Total records: {total_count}")
@@ -145,7 +157,7 @@ async def main():
             f.write("\n".join(sql_statements))
         print(f"\n📄 Saved SQL migration: {sql_path}")
 
-    print("🎉 All screenshots captured!")
+    print("🎉 High-quality Python screenshot scraping completed!")
 
 if __name__ == "__main__":
     asyncio.run(main())

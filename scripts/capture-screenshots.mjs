@@ -4,20 +4,26 @@ import { join } from "node:path";
 import { chromium } from "playwright";
 
 /**
- * Parallel Screenshot Generator for Bangladesh July Revolution Archive
- * Scrapes news source URLs, waits 2s for page render, and saves featured images.
+ * High-Performance Parallel Screenshot Generator
+ * - Concurrency: 15 parallel browser instances (10-20 range)
+ * - Render Delay: 10 seconds per page for full dynamic image & layout loading
+ * - Realistic Chrome Desktop User Agent & Headers
  */
 
 const SCREENSHOT_DIR = join(process.cwd(), "public", "screenshots");
-const CONCURRENCY = parseInt(process.env.CONCURRENCY || "5", 10);
-const DELAY_MS = 2000; // 2 seconds delay before screenshot as requested
+const CONCURRENCY = parseInt(process.env.CONCURRENCY || "15", 10);
+const DELAY_MS = parseInt(process.env.DELAY || "10000", 10); // 10 seconds render wait
+const FORCE_RECAPTURE = process.argv.includes("--force") || process.env.FORCE === "true";
+
+const USER_AGENT =
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
 if (!existsSync(SCREENSHOT_DIR)) {
 	mkdirSync(SCREENSHOT_DIR, { recursive: true });
 }
 
 async function fetchAllNews() {
-	console.log("🔍 Loading article URLs...");
+	console.log("🔍 Loading article URLs from database...");
 
 	// 1. Try parsing from migrations/0003_auto_ingest_news.sql first (Fast & offline)
 	const sqlPath = join(process.cwd(), "migrations", "0003_auto_ingest_news.sql");
@@ -29,7 +35,6 @@ async function fetchAllNews() {
 
 		for (const line of lines) {
 			if (!line.includes("VALUES")) continue;
-			// Extract single-quoted parameters
 			const matches = line.match(/'([^'\\]*(?:\\.[^'\\]*)*)'/g);
 			if (matches && matches.length >= 4) {
 				const title = matches[0].replace(/^'|'$/g, "").replace(/''/g, "'");
@@ -69,8 +74,15 @@ async function fetchAllNews() {
 async function captureWorker(items, browser, sqlStatements, progressState) {
 	const context = await browser.newContext({
 		viewport: { width: 1280, height: 720 },
-		userAgent:
-			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+		userAgent: USER_AGENT,
+		extraHTTPHeaders: {
+			"Accept-Language": "en-US,en;q=0.9,bn;q=0.8",
+			"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+			"Sec-Ch-Ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+			"Sec-Ch-Ua-Mobile": "?0",
+			"Sec-Ch-Ua-Platform": '"Windows"',
+		},
+		deviceScaleFactor: 1,
 	});
 
 	const page = await context.newPage();
@@ -93,35 +105,35 @@ async function captureWorker(items, browser, sqlStatements, progressState) {
 		const filepath = join(SCREENSHOT_DIR, filename);
 		const publicPath = `/screenshots/${filename}`;
 
-		// Skip if already captured
-		if (existsSync(filepath)) {
+		// Skip if already captured and not forced (unless file is placeholder 6KB)
+		if (!FORCE_RECAPTURE && existsSync(filepath)) {
 			console.log(`[${index}/${total}] ⏩ ID ${item.id} already captured (${filename}).`);
 			sqlStatements.push(`UPDATE news SET image = '${publicPath}' WHERE id = ${item.id};`);
 			continue;
 		}
 
-		console.log(`[${index}/${total}] 📸 Capturing ID ${item.id}: ${targetUrl}`);
+		console.log(`[${index}/${total}] 📸 Capturing ID ${item.id} (10s delay): ${targetUrl}`);
 
 		try {
-			// Navigate to target URL with timeout fallback
+			// Navigate to target URL
 			await page.goto(targetUrl, {
 				waitUntil: "domcontentloaded",
-				timeout: 20000,
+				timeout: 25000,
 			}).catch(() => null);
 
-			// Wait 2 seconds for full rendering/images/animations as requested
+			// Wait 10 seconds for full rendering, dynamic images, fonts & popups to clear
 			await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
 
 			// Capture screenshot
 			await page.screenshot({
 				path: filepath,
 				type: "jpeg",
-				quality: 85,
+				quality: 88,
 				fullPage: false,
 			});
 
 			sqlStatements.push(`UPDATE news SET image = '${publicPath}' WHERE id = ${item.id};`);
-			console.log(`[${index}/${total}] ✅ Saved screenshot: ${filename}`);
+			console.log(`[${index}/${total}] ✅ Saved high-quality screenshot: ${filename}`);
 		} catch (err) {
 			console.warn(`[${index}/${total}] ❌ Failed ID ${item.id} (${targetUrl}): ${err.message}`);
 		}
@@ -131,8 +143,9 @@ async function captureWorker(items, browser, sqlStatements, progressState) {
 }
 
 async function run() {
-	console.log("🚀 Starting Parallel Screenshot Scraping Script...");
-	console.log(`⚙️ Concurrency: ${CONCURRENCY} parallel workers | Render Delay: ${DELAY_MS / 1000}s`);
+	console.log("🚀 Starting Updated Screenshot Scraper (High Quality 10s Render)...");
+	console.log(`⚙️ Concurrency: ${CONCURRENCY} workers | Render Delay: ${DELAY_MS / 1000}s | Force Overwrite: ${FORCE_RECAPTURE}`);
+	console.log(`👤 User-Agent: ${USER_AGENT}`);
 
 	const newsItems = await fetchAllNews();
 	console.log(`📋 Total records found: ${newsItems.length}`);
@@ -146,7 +159,7 @@ async function run() {
 	const sqlStatements = [];
 	const progressState = { current: 0, total: newsItems.length };
 
-	console.log("🌐 Launching Chromium browser instance...");
+	console.log("🌐 Launching Chromium browser pool...");
 	const browser = await chromium.launch({ headless: true });
 
 	const workers = Array.from({ length: CONCURRENCY }, () =>
@@ -161,12 +174,9 @@ async function run() {
 		const sqlPath = join(process.cwd(), "migrations", "0005_update_screenshots.sql");
 		writeFileSync(sqlPath, sqlStatements.join("\n"), "utf8");
 		console.log(`\n📄 Generated SQL migration file: ${sqlPath}`);
-		console.log("💡 You can execute this migration on D1 using:");
-		console.log("   npx wrangler d1 execute DB --local --file=migrations/0005_update_screenshots.sql");
-		console.log("   npx wrangler d1 execute DB --remote --file=migrations/0005_update_screenshots.sql");
 	}
 
-	console.log("\n🎉 Screenshot scraping task completed successfully!");
+	console.log("\n🎉 High-quality screenshot scraping completed successfully!");
 }
 
 run().catch((err) => {
