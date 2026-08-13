@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { API, C, F, LIMIT } from "../lib/ds";
+import { API, LIMIT } from "../lib/ds";
 
 export interface NewsItem {
 	id: number;
@@ -61,36 +61,18 @@ export const Route = createFileRoute("/")({
 
 function IndexError({ error }: { error: Error }) {
 	return (
-		<div
-			style={{
-				minHeight: "60vh",
-				display: "flex",
-				flexDirection: "column",
-				alignItems: "center",
-				justifyContent: "center",
-				textAlign: "center",
-				padding: "40px 20px",
-			}}
-		>
-			<h2
-				style={{
-					fontFamily: F.display,
-					fontSize: "1.8rem",
-					fontWeight: 800,
-					color: C.red,
-					margin: "0 0 12px 0",
-				}}
-			>
+		<div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-5 py-10">
+			<h2 className="font-display text-[1.8rem] font-extrabold text-red-600 mb-3">
 				Unable to Load Archive Records
 			</h2>
-			<p style={{ color: C.textSec, maxWidth: 460, margin: "0 0 24px 0" }}>
+			<p className="text-slate-600 max-w-[460px] mb-6 text-sm sm:text-base">
 				{error?.message ||
 					"A network error occurred while connecting to the July Revolution database."}
 			</p>
 			<Link
 				to="/"
 				search={{ filter: "all", page: 1 }}
-				className="btn btn-primary"
+				className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-red-600 hover:bg-red-800 transition-all shadow-[0_8px_22px_-4px_rgba(220,38,38,0.28)] hover:-translate-y-0.5 no-underline"
 			>
 				Retry Loading Archive →
 			</Link>
@@ -127,27 +109,14 @@ function LazyImage({ src, alt }: { src: string; alt: string }) {
 	}, []);
 
 	return (
-		<div
-			style={{
-				position: "relative",
-				width: "100%",
-				height: "100%",
-				background: "#131314",
-			}}
-		>
+		<div className="relative w-full h-full bg-slate-900">
 			{!loaded && !err && (
-				<div
-					className="news-card-placeholder shimmer"
-					style={{ position: "absolute", inset: 0, zIndex: 2 }}
-				>
+				<div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900 text-white/20 font-display font-black text-2xl tracking-widest uppercase animate-shimmer">
 					<span>INQUILAB</span>
 				</div>
 			)}
 			{err && (
-				<div
-					className="news-card-placeholder"
-					style={{ position: "absolute", inset: 0, zIndex: 2 }}
-				>
+				<div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900 text-white/20 font-display font-black text-2xl tracking-widest uppercase">
 					<span>INQUILAB</span>
 				</div>
 			)}
@@ -157,17 +126,9 @@ function LazyImage({ src, alt }: { src: string; alt: string }) {
 					src={src}
 					alt={alt}
 					referrerPolicy="no-referrer"
-					className={`img-fade${loaded ? " loaded" : ""}`}
-					style={{
-						position: "absolute",
-						inset: 0,
-						width: "100%",
-						height: "100%",
-						objectFit: "cover",
-						zIndex: 1,
-						opacity: loaded ? 1 : 0,
-						transition: "opacity 0.3s ease",
-					}}
+					className={`absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-300 ${
+						loaded ? "opacity-100" : "opacity-0"
+					}`}
 					onLoad={() => setLoaded(true)}
 					onError={() => setErr(true)}
 				/>
@@ -229,57 +190,63 @@ function TimelineSection() {
 	const current = MILESTONES[activeIdx];
 
 	return (
-		<section className="timeline-section">
-			<div className="timeline-header">
-				<h3 className="timeline-title">
-					<span className="timeline-title-dot" />
+		<section className="max-w-7xl mx-auto px-4 md:px-8 pt-7 md:pt-10 pb-4">
+			<div className="flex items-start justify-between mb-4 flex-wrap gap-2">
+				<h3 className="font-display text-lg font-bold text-slate-900 flex items-center gap-2 m-0">
+					<span className="w-2 h-2 rounded-full bg-red-600 shrink-0" />
 					July–August 2024 Uprising Chronology
 				</h3>
-				<span
-					style={{ fontSize: "0.82rem", color: C.textSec, fontWeight: 500 }}
-				>
+				<span className="text-xs text-slate-500 font-medium">
 					Click a milestone to inspect event details
 				</span>
 			</div>
 
 			{/* Horizontal Step Slider */}
-			<div className="timeline-nav">
+			<div className="flex gap-2 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3.5 pt-1 px-0.5">
 				{MILESTONES.map((m, i) => (
 					<button
 						key={m.id}
 						type="button"
-						className={`timeline-step${activeIdx === i ? " active" : ""}`}
+						className={`shrink-0 snap-start bg-slate-50 hover:bg-red-50 hover:text-red-700 p-3.5 cursor-pointer transition-all text-left min-h-[60px] min-w-[130px] max-w-[175px] border-0 outline-none ${
+							activeIdx === i
+								? "bg-red-600 text-white shadow-[0_8px_22px_-4px_rgba(220,38,38,0.28)] -translate-y-0.5"
+								: "text-slate-700"
+						}`}
 						onClick={() => setActiveIdx(i)}
 					>
-						<span className="timeline-step-date">{m.date.split(",")[0]}</span>
-						<span className="timeline-step-title">{m.title}</span>
+						<span
+							className={`font-display text-sm font-extrabold block tracking-tight ${
+								activeIdx === i ? "text-white" : "text-slate-900"
+							}`}
+						>
+							{m.date.split(",")[0]}
+						</span>
+						<span
+							className={`text-[0.72rem] font-semibold block mt-1 truncate max-w-[150px] ${
+								activeIdx === i ? "text-white/90" : "text-slate-600"
+							}`}
+						>
+							{m.title}
+						</span>
 					</button>
 				))}
 			</div>
 
 			{/* Selected Milestone Box */}
-			<div className="milestone-box">
+			<div className="bg-slate-900 text-white p-5 md:p-6 mt-2.5 flex flex-col md:flex-row md:items-start justify-between gap-3 shadow-xl relative overflow-hidden border-l-4 border-red-600">
 				<div>
-					<div className="milestone-date">{current.date}</div>
-					<h4 className="milestone-heading">{current.title}</h4>
-					<p className="milestone-desc">{current.desc}</p>
+					<div className="font-body text-xs font-bold tracking-widest uppercase text-red-500 mb-1">
+						{current.date}
+					</div>
+					<h4 className="font-display text-lg md:text-xl font-bold text-white mb-1.5 leading-snug">
+						{current.title}
+					</h4>
+					<p className="text-sm leading-relaxed text-slate-300 m-0">
+						{current.desc}
+					</p>
 				</div>
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "column",
-						alignItems: "flex-end",
-						gap: 6,
-					}}
-				>
-					<span
-						style={{
-							fontSize: "0.75rem",
-							color: C.subtle,
-							fontWeight: 700,
-							letterSpacing: "0.1em",
-						}}
-					>
+				<div className="flex flex-col items-end gap-1.5">
+					<span className="text-[0.75rem] text-slate-400 font-bold tracking-widest shrink-0">
 						STEP 0{activeIdx + 1} OF 0{MILESTONES.length}
 					</span>
 				</div>
@@ -302,7 +269,11 @@ function NewsCard({
 	return (
 		// biome-ignore lint/a11y/useSemanticElements: news card container
 		<div
-			className={`news-card${isKilled ? " is-killed" : ""}`}
+			className={`bg-white overflow-hidden flex flex-col no-underline text-inherit transition-all duration-200 cursor-pointer shadow-xs hover:shadow-lg hover:-translate-y-1 ${
+				isKilled
+					? "shadow-[0_2px_8px_rgba(220,38,38,0.1)] hover:shadow-[0_10px_26px_-4px_rgba(220,38,38,0.22)]"
+					: ""
+			}`}
 			role="button"
 			tabIndex={0}
 			onClick={() => onQuickView(item)}
@@ -312,34 +283,39 @@ function NewsCard({
 					onQuickView(item);
 				}
 			}}
-			style={{ cursor: "pointer" }}
 		>
-			<div className="news-card-img-wrap">
+			<div className="relative w-full h-[180px] sm:h-[200px] lg:h-[210px] bg-slate-900 overflow-hidden">
 				{item.image ? (
 					<LazyImage src={item.image} alt={item.title} />
 				) : (
-					<div className="news-card-placeholder">
+					<div className="w-full h-full flex items-center justify-center bg-slate-900 text-white/20 font-display font-black text-2xl tracking-widest uppercase">
 						<span>INQUILAB</span>
 					</div>
 				)}
-				{isKilled && <div className="news-card-martyr-badge">MARTYR</div>}
+				{isKilled && (
+					<div className="absolute top-2.5 right-2.5 bg-red-600 text-white font-body font-bold text-[0.68rem] tracking-wider uppercase px-2 py-1 shadow-md z-10">
+						MARTYR
+					</div>
+				)}
 			</div>
 
-			<div className="news-card-body">
-				<h3 className="news-card-title">{item.title}</h3>
+			<div className="p-4 flex-1 flex flex-col">
+				<h3 className="font-display text-base sm:text-[1.05rem] lg:text-lg font-bold leading-snug text-slate-900 mb-2 line-clamp-2">
+					{item.title}
+				</h3>
 				{item.description && (
-					<p className="news-card-desc">
+					<p className="text-xs sm:text-sm leading-relaxed text-slate-600 mb-3.5 flex-1 line-clamp-2 sm:line-clamp-3">
 						{item.description.replace(/\r?\n/g, " ").trim()}
 					</p>
 				)}
 
-				<div className="news-card-footer">
-					<span className="news-card-date">
+				<div className="flex items-center justify-between pt-2.5 mt-auto gap-2">
+					<span className="text-xs font-medium text-slate-500 whitespace-nowrap">
 						{fmtDate(item.published) || "Jul 2024"}
 					</span>
 					<button
 						type="button"
-						className="news-card-quickview"
+						className="text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-600 hover:text-white px-3 py-1.5 min-h-[32px] transition-colors cursor-pointer whitespace-nowrap shrink-0 border-0"
 						onClick={(e) => {
 							e.stopPropagation();
 							onQuickView(item);
@@ -376,7 +352,7 @@ function QuickViewModal({
 	return (
 		// biome-ignore lint/a11y/useSemanticElements: modal backdrop
 		<div
-			className="modal-backdrop"
+			className="fixed inset-0 z-[9000] bg-slate-950/72 backdrop-blur-xs flex items-end md:items-stretch md:justify-end"
 			role="button"
 			tabIndex={0}
 			onClick={onClose}
@@ -385,28 +361,32 @@ function QuickViewModal({
 			}}
 		>
 			<div
-				className="modal-drawer"
+				className="w-full max-h-[92vh] h-[92vh] md:w-[min(600px,90vw)] md:max-h-none md:h-full bg-slate-900 text-slate-200 shadow-2xl flex flex-col relative z-[9001] md:border-l md:border-slate-800"
 				role="dialog"
 				aria-modal="true"
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={(e) => e.stopPropagation()}
 			>
+				{/* Drag handle for mobile */}
+				<div className="md:hidden flex justify-center items-center py-2 bg-slate-900 shrink-0 cursor-grab">
+					<div className="w-9 h-1 bg-slate-700 rounded-full" />
+				</div>
+
 				{/* Header */}
-				<div className="modal-header">
-					<div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-						<span className="modal-header-tag">ARCHIVE RECORD</span>
+				<div className="p-3.5 md:p-4.5 px-4 md:px-6 flex items-center justify-between bg-slate-800 shrink-0">
+					<div className="flex items-center gap-2">
+						<span className="font-body text-[0.7rem] font-bold tracking-widest uppercase text-slate-400">
+							ARCHIVE RECORD
+						</span>
 						{isKilled && (
-							<span
-								className="news-card-martyr-badge"
-								style={{ position: "static" }}
-							>
+							<span className="bg-red-600 text-white font-body font-bold text-[0.68rem] tracking-wider uppercase px-2 py-0.5">
 								MARTYR
 							</span>
 						)}
 					</div>
 					<button
 						type="button"
-						className="modal-close-btn"
+						className="bg-slate-700 hover:bg-red-600 text-slate-200 hover:text-white text-lg w-9 h-9 flex items-center justify-center cursor-pointer transition-colors rounded-full border-0 shrink-0"
 						onClick={onClose}
 						title="Close drawer (Esc)"
 					>
@@ -415,39 +395,46 @@ function QuickViewModal({
 				</div>
 
 				{/* Body */}
-				<div className="modal-body">
+				<div className="p-4 md:p-7 overflow-y-auto flex-1">
 					{isKilled && (
-						<div className="modal-martyr-banner">
-							<span className="modal-martyr-tag">MARTYR RECORD</span>
-							<span className="modal-martyr-text">
+						<div className="bg-red-500/14 p-3.5 mb-5 flex items-start gap-2.5 flex-wrap">
+							<span className="bg-red-600 text-white font-extrabold text-[0.67rem] px-2 py-0.5 tracking-wider uppercase shrink-0 mt-0.5">
+								MARTYR RECORD
+							</span>
+							<span className="text-xs sm:text-sm font-medium text-red-300 leading-normal">
 								Documented loss of life during the Bangladesh July–August 2024
 								Revolution.
 							</span>
 						</div>
 					)}
 
-					<h2 className="modal-title">{item.title}</h2>
+					<h2 className="font-display text-xl md:text-2xl font-extrabold leading-snug text-white mb-3.5">
+						{item.title}
+					</h2>
 
-					<div className="modal-meta">
+					<div className="flex items-center gap-3 flex-wrap text-xs text-slate-400 mb-5">
 						{item.published && (
 							<span>
-								Published: <strong>{fmtDate(item.published)}</strong>
+								Published:{" "}
+								<strong className="text-slate-200">
+									{fmtDate(item.published)}
+								</strong>
 							</span>
 						)}
 						<span>
 							Status:{" "}
-							<strong style={{ color: isKilled ? C.red : C.textSec }}>
+							<strong className={isKilled ? "text-red-400" : "text-slate-300"}>
 								{isKilled ? "Martyrdom" : "Record"}
 							</strong>
 						</span>
 					</div>
 
 					{item.image && (
-						<div className="modal-img-wrap">
+						<div className="w-full overflow-hidden mb-5 bg-slate-800 max-h-[280px]">
 							<img
 								src={item.image}
 								alt={item.title}
-								className="modal-img"
+								className="w-full h-full object-cover block"
 								referrerPolicy="no-referrer"
 							/>
 						</div>
@@ -456,31 +443,30 @@ function QuickViewModal({
 					{item.description ? (
 						<div>
 							{item.description.split(/\r?\n\r?\n/).map((para) => (
-								<p key={para} className="modal-content-p">
+								<p
+									key={para}
+									className="text-sm sm:text-base leading-relaxed text-slate-200 mb-4"
+								>
 									{para.trim()}
 								</p>
 							))}
 						</div>
 					) : (
-						<p
-							className="modal-content-p"
-							style={{ color: C.muted, fontStyle: "italic" }}
-						>
+						<p className="text-sm italic text-slate-400 mb-4">
 							No extra description recorded for this item.
 						</p>
 					)}
 				</div>
 
 				{/* Footer */}
-				<div className="modal-footer">
-					<div style={{ display: "flex", gap: 8 }}>
+				<div className="p-3.5 md:p-4.5 px-4 md:px-6 bg-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-2 shrink-0">
+					<div className="flex gap-2">
 						{item.link && (
 							<a
 								href={item.link}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="btn btn-ghost"
-								style={{ fontSize: "0.85rem", padding: "8px 16px" }}
+								className="text-xs font-semibold px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 hover:text-white transition-colors no-underline"
 							>
 								↗ Original Source
 							</a>
@@ -490,8 +476,7 @@ function QuickViewModal({
 								href={item.archive_link}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="btn btn-ghost"
-								style={{ fontSize: "0.85rem", padding: "8px 16px" }}
+								className="text-xs font-semibold px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 hover:text-white transition-colors no-underline"
 							>
 								⊞ Web Archive
 							</a>
@@ -499,8 +484,7 @@ function QuickViewModal({
 					</div>
 					<button
 						type="button"
-						className="btn btn-primary"
-						style={{ fontSize: "0.85rem", padding: "8px 18px" }}
+						className="text-xs font-semibold px-4.5 py-2 bg-red-600 hover:bg-red-800 text-white transition-colors border-0 cursor-pointer"
 						onClick={onClose}
 					>
 						Close Drawer
@@ -519,7 +503,11 @@ function getPaginationRange(current: number, total: number) {
 	const rangeWithDots: (number | "...")[] = [];
 
 	for (let i = 1; i <= total; i++) {
-		if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+		if (
+			i === 1 ||
+			i === total ||
+			(i >= current - delta && i <= current + delta)
+		) {
 			range.push(i);
 		}
 	}
@@ -592,46 +580,59 @@ function HomePage() {
 				: "All Movement Records";
 
 	return (
-		<div style={{ minHeight: "100vh", background: C.bg }}>
+		<div className="min-h-screen bg-white">
 			{/* ── HERO SECTION ── */}
-			<section className="hero">
-				<div className="hero-lines" />
-				<div className="hero-inner">
-					<div className="hero-eyebrow">
-						<span className="hero-eyebrow-line" />
-						<span className="hero-eyebrow-text">HISTORICAL ARCHIVE • JULY UPRISING 2024</span>
-						<span className="hero-eyebrow-line" />
+			<section className="relative bg-[#0d0e12] bg-[url('/hero-bg.jpg')] bg-[position:center_30%] bg-cover bg-no-repeat px-5 py-16 md:py-24 lg:py-28 text-center text-white min-h-[min(100vh,680px)] flex items-center justify-center overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-b before:from-black/25 before:to-black/72 before:pointer-events-none before:z-0">
+				<div className="absolute inset-0 pointer-events-none opacity-10 z-0 bg-[radial-gradient(rgba(255,255,255,0.45)_1px,transparent_1px)] [background-size:24px_24px]" />
+				<div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center">
+					<div className="inline-flex items-center gap-2 mb-5 bg-red-600/18 px-3.5 py-1.5 backdrop-blur-xs flex-wrap justify-center">
+						<span className="w-3.5 h-0.5 bg-red-500 shrink-0" />
+						<span className="font-body text-[clamp(0.62rem,2.2vw,0.78rem)] font-extrabold tracking-widest uppercase text-red-400 text-center">
+							HISTORICAL ARCHIVE • JULY UPRISING 2024
+						</span>
+						<span className="w-3.5 h-0.5 bg-red-500 shrink-0" />
 					</div>
 
-					<h1 className="hero-headline">
-						Documenting the <span>Uprising</span>,<br />
+					<h1 className="font-display font-black text-[clamp(2rem,7.5vw,4.5rem)] leading-none tracking-tight text-white mb-4.5 drop-shadow-md">
+						Documenting the{" "}
+						<span className="text-red-500 bg-gradient-to-br from-red-400 to-red-600 bg-clip-text text-transparent">
+							Uprising
+						</span>
+						,<br />
 						Preserving Every Voice.
 					</h1>
 
-					<p className="hero-sub">
+					<p className="font-body text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed text-slate-300 max-w-2xl mb-7 drop-shadow-xs">
 						A verified digital archive preserving testimonies, martyrdom
 						records, and pivotal events of the July–August 2024 mass uprising in
 						Bangladesh.
 					</p>
 
-					<div className="hero-stat-row">
-						<div className="hero-stat-item">
-							<span className="hero-stat-num">1,400+</span> Martyrs & Lives Lost
+					<div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-4 bg-slate-900/82 backdrop-blur-md shadow-2xl p-3 sm:px-6 mb-7 w-full max-w-xl">
+						<div className="flex items-center justify-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-200 py-1.5 sm:py-0">
+							<span className="font-display text-lg sm:text-xl font-extrabold text-red-400 whitespace-nowrap">
+								1,400+
+							</span>{" "}
+							Martyrs & Lives Lost
 						</div>
-						<div className="hero-stat-divider" />
-						<div className="hero-stat-item">
-							<span className="hero-stat-num">20,000+</span> Injured & Wounded
+						<div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-white/28 shrink-0" />
+						<div className="flex items-center justify-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-200 py-1.5 sm:py-0">
+							<span className="font-display text-lg sm:text-xl font-extrabold text-red-400 whitespace-nowrap">
+								20,000+
+							</span>{" "}
+							Injured & Wounded
 						</div>
-						<div className="hero-stat-divider" />
-						<div className="hero-stat-item">
-							<span style={{ color: "#94a3b8", fontWeight: 700 }}>
-								36 Days Uprising (Jul 1 – Aug 5)
-							</span>
+						<div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-white/28 shrink-0" />
+						<div className="flex items-center justify-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-400 py-1.5 sm:py-0">
+							<span>36 Days Uprising (Jul 1 – Aug 5)</span>
 						</div>
 					</div>
 
-					<div className="hero-cta">
-						<a href="#archive" className="btn btn-primary">
+					<div className="flex flex-col sm:flex-row items-stretch justify-center gap-2.5 w-full max-w-xs sm:max-w-none">
+						<a
+							href="#archive"
+							className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm sm:text-base font-semibold text-white bg-red-600 hover:bg-red-800 transition-all shadow-[0_8px_22px_-4px_rgba(220,38,38,0.28)] hover:-translate-y-0.5 no-underline"
+						>
 							Explore Main Archive ↓
 						</a>
 					</div>
@@ -642,17 +643,22 @@ function HomePage() {
 			<TimelineSection />
 
 			{/* ── ARCHIVE SECTION ── */}
-			<section id="archive" className="archive-section">
+			<section
+				id="archive"
+				className="max-w-7xl mx-auto px-4 md:px-8 py-7 md:py-10 pb-20"
+			>
 				{/* Header & Search Bar */}
-				<div className="archive-header">
-					<h2 className="section-title">
-						List of <span>{sectionLabel}</span>
+				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
+					<h2 className="font-display font-extrabold text-[clamp(1.4rem,5vw,2.1rem)] tracking-tight text-slate-900 m-0">
+						List of <span className="text-red-600">{sectionLabel}</span>
 					</h2>
 
-					<div className="search-wrap">
-						<span className="search-icon">⌕</span>
+					<div className="relative w-full sm:max-w-md">
+						<span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none select-none">
+							⌕
+						</span>
 						<input
-							className="search-input"
+							className="w-full h-12 pl-12 pr-11 bg-slate-50 border border-slate-200 font-body text-sm text-slate-900 outline-none focus:bg-white focus:border-red-600 focus:ring-2 focus:ring-red-600/20 transition-all"
 							type="text"
 							placeholder="Search records by title, location or detail…"
 							value={q || ""}
@@ -661,7 +667,7 @@ function HomePage() {
 						{q && (
 							<button
 								type="button"
-								className="search-clear"
+								className="absolute right-3 top-1/2 -translate-y-1/2 bg-slate-200 hover:bg-red-600 hover:text-white text-slate-700 border-0 rounded-full w-6 h-6 flex items-center justify-center text-xs cursor-pointer transition-colors"
 								onClick={() => handleSearchChange("")}
 								title="Clear search"
 							>
@@ -672,22 +678,26 @@ function HomePage() {
 				</div>
 
 				{/* Filter Tabs & Results Count */}
-				<div className="filter-tabs-row">
-					<div className="filter-tabs">
+				<div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 mb-6 gap-2.5 border-b border-slate-100">
+					<div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
 						{TABS.map((tab) => (
 							<Link
 								key={tab.key}
 								to="/"
 								search={{ filter: tab.key, page: 1, q: q || undefined }}
 								resetScroll={false}
-								className={`filter-tab${filter === tab.key ? " active" : ""}`}
+								className={`font-body text-xs sm:text-sm font-semibold px-4 py-2 transition-colors shrink-0 whitespace-nowrap inline-flex items-center min-h-[40px] no-underline ${
+									filter === tab.key
+										? "bg-red-600 text-white"
+										: "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+								}`}
 							>
 								{tab.label}
 							</Link>
 						))}
 					</div>
 
-					<span className="filter-count">
+					<span className="text-xs font-medium text-slate-500 px-0.5">
 						{q
 							? `Found ${filteredItems.length} matching items (Page ${currentPage} of ${totalPages})`
 							: `Showing page ${currentPage} of ${totalPages} (${news.total} total records)`}
@@ -696,18 +706,16 @@ function HomePage() {
 
 				{/* Card Grid */}
 				{paginatedItems.length === 0 ? (
-					<div
-						style={{ textAlign: "center", padding: "80px 0", color: C.muted }}
-					>
-						<p style={{ fontSize: "1.1rem", fontWeight: 600, margin: 0 }}>
+					<div className="text-center py-20 text-slate-500">
+						<p className="text-lg font-semibold m-0">
 							No records match your search criteria.
 						</p>
-						<p style={{ fontSize: "0.9rem", color: C.subtle, marginTop: 6 }}>
+						<p className="text-sm text-slate-400 mt-1.5">
 							Try clearing your search query or switching filter tabs.
 						</p>
 					</div>
 				) : (
-					<div className="card-grid">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7">
 						{paginatedItems.map((item) => (
 							<NewsCard
 								key={item.id}
@@ -720,20 +728,24 @@ function HomePage() {
 
 				{/* Pagination Controls */}
 				{totalPages > 1 && (
-					<div className="pagination">
+					<div className="flex items-center justify-center gap-1.25 mt-10 flex-wrap">
 						{currentPage > 1 && (
 							<Link
 								to="/"
 								search={{ filter, page: currentPage - 1, q: q || undefined }}
 								resetScroll={false}
-								className="page-btn"
+								className="font-body text-xs sm:text-sm font-semibold text-slate-700 min-w-[42px] h-[42px] px-3 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 flex items-center justify-center transition-colors whitespace-nowrap no-underline active:scale-95"
 							>
 								← Prev
 							</Link>
 						)}
 						{getPaginationRange(currentPage, totalPages).map((p, idx) =>
 							p === "..." ? (
-								<span key={`ellipsis-${idx}`} className="page-ellipsis">
+								<span
+									// biome-ignore lint/suspicious/noArrayIndexKey: pagination ellipsis position index is stable
+									key={`ellipsis-${idx}`}
+									className="inline-flex items-center justify-center min-w-[28px] h-[42px] px-0.5 text-base font-extrabold text-slate-400 select-none"
+								>
 									…
 								</span>
 							) : (
@@ -742,7 +754,11 @@ function HomePage() {
 									to="/"
 									search={{ filter, page: p, q: q || undefined }}
 									resetScroll={false}
-									className={`page-btn${p === currentPage ? " active" : ""}`}
+									className={`font-body text-xs sm:text-sm font-semibold min-w-[42px] h-[42px] px-3 flex items-center justify-center transition-colors whitespace-nowrap no-underline active:scale-95 ${
+										p === currentPage
+											? "bg-red-600 text-white shadow-[0_8px_22px_-4px_rgba(220,38,38,0.28)]"
+											: "text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900"
+									}`}
 								>
 									{p}
 								</Link>
@@ -753,7 +769,7 @@ function HomePage() {
 								to="/"
 								search={{ filter, page: currentPage + 1, q: q || undefined }}
 								resetScroll={false}
-								className="page-btn"
+								className="font-body text-xs sm:text-sm font-semibold text-slate-700 min-w-[42px] h-[42px] px-3 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 flex items-center justify-center transition-colors whitespace-nowrap no-underline active:scale-95"
 							>
 								Next →
 							</Link>

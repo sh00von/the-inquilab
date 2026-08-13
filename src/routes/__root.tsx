@@ -13,7 +13,10 @@ export const Route = createRootRoute({
 	head: () => ({
 		meta: [
 			{ charSet: "utf-8" },
-			{ name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+			{
+				name: "viewport",
+				content: "width=device-width, initial-scale=1, viewport-fit=cover",
+			},
 			{ title: "The Inquilab — Bangladesh July Revolution Archive" },
 			{
 				name: "description",
@@ -21,7 +24,10 @@ export const Route = createRootRoute({
 					"A living archive of the Bangladesh July–August 2024 Mass Uprising. Documenting martyrs, news, and testimonies of the student-people revolution.",
 			},
 			{ name: "theme-color", content: "#0f172a" },
-			{ property: "og:title", content: "The Inquilab — Bangladesh July Revolution Archive" },
+			{
+				property: "og:title",
+				content: "The Inquilab — Bangladesh July Revolution Archive",
+			},
 			{
 				property: "og:description",
 				content:
@@ -51,47 +57,21 @@ export const Route = createRootRoute({
 
 function NotFound() {
 	return (
-		<div
-			style={{
-				minHeight: "70vh",
-				display: "flex",
-				flexDirection: "column",
-				alignItems: "center",
-				justifyContent: "center",
-				textAlign: "center",
-				padding: "40px 20px",
-			}}
-		>
-			<h1
-				style={{
-					fontFamily: "Outfit, sans-serif",
-					fontSize: "clamp(3rem, 12vw, 6rem)",
-					fontWeight: 900,
-					color: "#dc2626",
-					margin: "0 0 12px 0",
-					lineHeight: 1,
-				}}
-			>
+		<div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-5 py-10">
+			<h1 className="font-display font-black text-[clamp(3rem,12vw,6rem)] text-red-600 mb-3 leading-none">
 				404
 			</h1>
-			<h2
-				style={{
-					fontFamily: "Outfit, sans-serif",
-					fontSize: "clamp(1.1rem, 3vw, 1.5rem)",
-					fontWeight: 700,
-					color: "#1f1f23",
-					margin: "0 0 12px 0",
-				}}
-			>
+			<h2 className="font-display font-bold text-[clamp(1.1rem,3vw,1.5rem)] text-slate-900 mb-3">
 				Record Not Found
 			</h2>
-			<p style={{ color: "#475569", maxWidth: 460, margin: "0 0 24px 0", fontSize: "0.95rem" }}>
-				The archive record or route you requested could not be located in our system.
+			<p className="text-slate-600 max-w-[460px] mb-6 text-sm sm:text-base">
+				The archive record or route you requested could not be located in our
+				system.
 			</p>
 			<Link
 				to="/"
 				search={{ filter: "all", page: 1 }}
-				className="btn btn-primary"
+				className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-800 transition-all shadow-[0_8px_22px_-4px_rgba(220,38,38,0.28)] hover:-translate-y-0.5 active:translate-y-0"
 			>
 				Return to Main Archive →
 			</Link>
@@ -101,36 +81,18 @@ function NotFound() {
 
 function RouteError({ error }: { error: Error }) {
 	return (
-		<div
-			style={{
-				minHeight: "70vh",
-				display: "flex",
-				flexDirection: "column",
-				alignItems: "center",
-				justifyContent: "center",
-				textAlign: "center",
-				padding: "40px 20px",
-			}}
-		>
-			<h1
-				style={{
-					fontFamily: "Outfit, sans-serif",
-					fontSize: "clamp(1.5rem, 4vw, 2rem)",
-					fontWeight: 800,
-					color: "#dc2626",
-					margin: "0 0 12px 0",
-				}}
-			>
+		<div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-5 py-10">
+			<h1 className="font-display font-extrabold text-[clamp(1.5rem,4vw,2rem)] text-red-600 mb-3">
 				Archive System Error
 			</h1>
-			<p style={{ color: "#475569", maxWidth: 480, margin: "0 0 24px 0" }}>
+			<p className="text-slate-600 max-w-[480px] mb-6 text-sm sm:text-base">
 				{error?.message ||
 					"An unexpected error occurred while loading archive data."}
 			</p>
 			<Link
 				to="/"
 				search={{ filter: "all", page: 1 }}
-				className="btn btn-primary"
+				className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-800 transition-all shadow-[0_8px_22px_-4px_rgba(220,38,38,0.28)] hover:-translate-y-0.5 active:translate-y-0"
 			>
 				Reload Main Archive →
 			</Link>
@@ -151,12 +113,18 @@ function Preloader({ onDone }: { onDone: () => void }) {
 		};
 	}, [onDone]);
 	return (
-		<div className={`preloader${exiting ? " exiting" : ""}`}>
-			<div className="preloader-logo">
-				THE <span>INQUILAB</span>
+		<div
+			className={`fixed inset-0 z-[9999] bg-slate-900 text-white flex flex-col items-center justify-center gap-3.5 p-5 ${
+				exiting ? "animate-preloader-exit" : ""
+			}`}
+		>
+			<div className="font-display font-black text-[clamp(2rem,8vw,3.8rem)] tracking-tight text-white text-center animate-preloader-in">
+				THE <span className="text-red-600">INQUILAB</span>
 			</div>
-			<div className="preloader-line" />
-			<div className="preloader-sub">Bangladesh July Revolution Archive</div>
+			<div className="w-11 h-0.5 bg-red-600" />
+			<div className="text-[clamp(9px,2.5vw,12px)] font-semibold tracking-[0.22em] uppercase text-slate-400 text-center">
+				Bangladesh July Revolution Archive
+			</div>
 		</div>
 	);
 }
@@ -185,7 +153,9 @@ function ProgressBar() {
 	if (!visible) return null;
 	return (
 		<div
-			className={`progress-bar${done ? " done" : " indeterminate"}`}
+			className={`fixed top-0 left-0 right-0 h-0.5 bg-red-600 z-[10000] transition-[width] duration-300 ease-in-out ${
+				done ? "w-full" : "animate-progress-indeterminate"
+			}`}
 			style={{ width: done ? "100%" : undefined }}
 		/>
 	);
@@ -256,34 +226,46 @@ function SiteNav() {
 
 	return (
 		<>
-			<nav className={`navbar${scrolled ? " scrolled" : ""}`}>
+			<nav
+				className={`sticky top-0 z-[1000] h-14 md:h-16 flex items-center justify-between px-4 md:px-8 lg:px-12 transition-all duration-200 ${
+					scrolled
+						? "bg-white/99 shadow-[0_2px_16px_rgba(15,23,42,0.09)]"
+						: "bg-white/95 backdrop-blur-md"
+				}`}
+			>
 				<Link
 					to="/"
 					search={{ filter: "all" as Filter, page: 1 }}
-					className="navbar-logo"
+					className="font-display font-extrabold text-lg md:text-xl tracking-tight text-slate-900 flex items-center gap-1 shrink-0 no-underline"
 					onClick={closeMenu}
 				>
-					THE <span>INQUILAB</span>
-					<span className="navbar-badge">2024 ARCHIVE</span>
+					THE <span className="text-red-600">INQUILAB</span>
+					<span className="hidden md:inline-block text-[9px] font-bold bg-red-50 text-red-600 border border-red-200 px-1.5 py-0.5 tracking-wider uppercase ml-1.5">
+						2024 ARCHIVE
+					</span>
 				</Link>
 
 				{isArticle ? (
 					<Link
 						to="/"
 						search={{ filter: "all" as Filter, page: 1 }}
-						className="nav-back"
+						className="text-xs md:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 px-3 py-2 transition-colors inline-flex items-center gap-1.5 min-h-[44px] no-underline"
 					>
-						← <span className="nav-back-label">Return to Main Archive</span>
+						← <span className="hidden md:inline">Return to Main Archive</span>
 					</Link>
 				) : (
 					<>
 						{/* Desktop nav links */}
-						<div className="nav-links">
+						<div className="hidden md:flex items-center gap-1">
 							<Link
 								to="/"
 								search={{ filter: "all" as Filter, page: 1 }}
 								resetScroll={false}
-								className={`nav-link${searchFilter === "all" ? " active" : ""}`}
+								className={`font-body text-sm font-semibold px-3.5 py-2 transition-colors inline-flex items-center min-h-[44px] no-underline ${
+									searchFilter === "all"
+										? "text-red-600 bg-red-50"
+										: "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+								}`}
 							>
 								All Records
 							</Link>
@@ -291,7 +273,11 @@ function SiteNav() {
 								to="/"
 								search={{ filter: "killed" as Filter, page: 1 }}
 								resetScroll={false}
-								className={`nav-link${searchFilter === "killed" ? " active" : ""}`}
+								className={`font-body text-sm font-semibold px-3.5 py-2 transition-colors inline-flex items-center min-h-[44px] no-underline ${
+									searchFilter === "killed"
+										? "text-red-600 bg-red-50"
+										: "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+								}`}
 							>
 								Martyrs
 							</Link>
@@ -300,14 +286,28 @@ function SiteNav() {
 						{/* Mobile hamburger */}
 						<button
 							type="button"
-							className={`navbar-hamburger${menuOpen ? " open" : ""}`}
-							aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+							className="md:hidden flex flex-col items-center justify-center gap-1.25 w-11 h-11 bg-transparent border-0 cursor-pointer p-2.5 shrink-0 relative z-[1002]"
+							aria-label={
+								menuOpen ? "Close navigation menu" : "Open navigation menu"
+							}
 							aria-expanded={menuOpen}
 							onClick={() => setMenuOpen((v) => !v)}
 						>
-							<span />
-							<span />
-							<span />
+							<span
+								className={`block w-5.5 h-0.5 bg-slate-800 transition-all duration-300 ease-out origin-center ${
+									menuOpen ? "translate-y-[7px] rotate-45" : ""
+								}`}
+							/>
+							<span
+								className={`block w-5.5 h-0.5 bg-slate-800 transition-all duration-200 ease-out ${
+									menuOpen ? "opacity-0 scale-x-0" : ""
+								}`}
+							/>
+							<span
+								className={`block w-5.5 h-0.5 bg-slate-800 transition-all duration-300 ease-out origin-center ${
+									menuOpen ? "-translate-y-[7px] -rotate-45" : ""
+								}`}
+							/>
 						</button>
 					</>
 				)}
@@ -316,7 +316,11 @@ function SiteNav() {
 			{/* Mobile overlay backdrop */}
 			{/* biome-ignore lint/a11y/useSemanticElements: overlay backdrop */}
 			<div
-				className={`nav-mobile-overlay${menuOpen ? " open" : ""}`}
+				className={`fixed inset-0 z-[1001] bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300 ${
+					menuOpen
+						? "opacity-100 pointer-events-auto"
+						: "opacity-0 pointer-events-none"
+				}`}
 				role="button"
 				tabIndex={-1}
 				aria-hidden="true"
@@ -325,31 +329,42 @@ function SiteNav() {
 			/>
 
 			{/* Mobile slide-down menu */}
-			<div
+			<nav
 				ref={menuRef}
-				className={`nav-mobile-menu${menuOpen ? " open" : ""}`}
-				role="navigation"
+				className={`fixed top-14 left-0 right-0 z-[1001] bg-white border-b-2 border-red-600 shadow-xl transition-all duration-300 py-2 ${
+					menuOpen
+						? "translate-y-0 opacity-100 pointer-events-auto"
+						: "-translate-y-2 opacity-0 pointer-events-none"
+				}`}
 				aria-label="Mobile navigation"
 			>
 				<Link
 					to="/"
 					search={{ filter: "all" as Filter, page: 1 }}
-					className={`nav-mobile-link${searchFilter === "all" ? " active" : ""}`}
+					className={`flex items-center gap-3 px-5 py-3.5 font-body text-base font-semibold border-b border-slate-100 transition-colors min-h-[52px] no-underline ${
+						searchFilter === "all"
+							? "text-red-600 bg-red-50"
+							: "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+					}`}
 					onClick={closeMenu}
 				>
-					<span className="nav-mobile-link-dot" />
+					<span className="w-2 h-2 rounded-full bg-current opacity-60 shrink-0" />
 					All Records
 				</Link>
 				<Link
 					to="/"
 					search={{ filter: "killed" as Filter, page: 1 }}
-					className={`nav-mobile-link${searchFilter === "killed" ? " active" : ""}`}
+					className={`flex items-center gap-3 px-5 py-3.5 font-body text-base font-semibold transition-colors min-h-[52px] no-underline ${
+						searchFilter === "killed"
+							? "text-red-600 bg-red-50"
+							: "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+					}`}
 					onClick={closeMenu}
 				>
-					<span className="nav-mobile-link-dot" />
+					<span className="w-2 h-2 rounded-full bg-current opacity-60 shrink-0" />
 					Martyr Records
 				</Link>
-			</div>
+			</nav>
 		</>
 	);
 }
@@ -358,31 +373,41 @@ function SiteNav() {
 
 function SiteFooter() {
 	return (
-		<footer className="site-footer">
-			<div className="footer-inner">
+		<footer className="bg-slate-900 text-slate-400 px-4 md:px-8 lg:px-12 pt-11 pb-9">
+			<div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-6 pb-7 border-b border-slate-800">
 				<div>
-					<div className="footer-logo">
-						THE <span>INQUILAB</span>
+					<div className="font-display font-black text-xl text-white mb-2">
+						THE <span className="text-red-600">INQUILAB</span>
 					</div>
-					<p className="footer-desc">
+					<p className="text-sm leading-relaxed text-slate-400 max-w-md m-0">
 						A comprehensive historical and digital archive preserving
 						testimonies, records, and martyrdom accounts of the Bangladesh
 						July–August 2024 Student-People Uprising.
 					</p>
 				</div>
 				<div>
-					<div className="footer-nav-heading">Archive Sections</div>
-					<div className="footer-nav-links">
-						<Link to="/" search={{ filter: "all", page: 1 }}>
+					<div className="text-sm font-bold text-white mb-2.5">
+						Archive Sections
+					</div>
+					<div className="flex flex-col gap-2 text-sm">
+						<Link
+							to="/"
+							search={{ filter: "all", page: 1 }}
+							className="text-slate-400 hover:text-white no-underline transition-colors"
+						>
 							All Records
 						</Link>
-						<Link to="/" search={{ filter: "killed", page: 1 }}>
+						<Link
+							to="/"
+							search={{ filter: "killed", page: 1 }}
+							className="text-slate-400 hover:text-white no-underline transition-colors"
+						>
 							Martyr Records
 						</Link>
 					</div>
 				</div>
 			</div>
-			<div className="footer-bottom">
+			<div className="max-w-7xl mx-auto mt-5 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500">
 				<span>July Revolution Digital Preservation · 2024–2026</span>
 				<span>Bangladesh Mass Uprising Archive</span>
 			</div>

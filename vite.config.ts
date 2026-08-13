@@ -9,8 +9,8 @@ const config = defineConfig({
 	resolve: { tsconfigPaths: true },
 	plugins: [
 		devtools(),
-		tailwindcss(),
 		tanstackStart(),
+		tailwindcss(),
 		nitro({
 			preset: "vercel",
 		}),
